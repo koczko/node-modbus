@@ -1,5 +1,3 @@
-
-
 /** jsModbus is a node.js module that enables the developer to interact with modbus/tcp and modbus/rtu server (slaves)
  * or to create a modbus/tcp server (master).
  * @module jsmodbus
@@ -29,13 +27,8 @@ import ModbusTCPClient from './modbus-tcp-client.js';
  * const client = new Modbus.client.TCP(socket, address)
  */
 
-import ModbusRTUClient from './modbus-rtu-client.js';
-
 /** module:jsmodbus.server.TCP */
 import ModbusTCPServer from './modbus-tcp-server.js';
-
-/** module:jsmodbus.server.RTU */
-import ModbusRTUServer from './modbus-rtu-server.js';
 
 import * as Requests from './request';
 import * as Responses from './response';
@@ -44,22 +37,18 @@ import UserRequest from './user-request.js';
 import * as Errors from './errors';
 
 export const client = {
-  TCP: ModbusTCPClient,
-  RTU: ModbusRTUClient
-}
+  TCP: ModbusTCPClient
+};
 
 export const server = {
-  TCP: ModbusTCPServer,
-  RTU: ModbusRTUServer
-}
-
-
+  TCP: ModbusTCPServer
+};
 
 export const requests = {
   ...Requests,
-  UserRequest,
+  UserRequest
 };
 
 export const responses = Responses;
 export const codes = Codes;
-export const errors = Errors
+export const errors = Errors;

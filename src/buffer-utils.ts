@@ -1,8 +1,6 @@
+import { Byte, BooleanArray } from './constants';
 
-
-import { Byte, BooleanArray } from "./constants";
-
-const debug = require('debug')('buffer-utils')
+const debug = require('debug')('buffer-utils');
 
 // Buffer utilities to make simplify writing multiple coils
 /*
@@ -28,35 +26,50 @@ const debug = require('debug')('buffer-utils')
  */
 
 class BufferUtils {
-  static bufferShift(startAddress: number, endAddress: number, outputs: Buffer) {
-    startAddress = startAddress - 1
-    const startShift = startAddress % 8
-    const startByte = Math.floor(startAddress / 8)
-    const endByte = Math.floor(endAddress / 8)
+  static bufferShift(
+    startAddress: number,
+    endAddress: number,
+    outputs: Buffer
+  ) {
+    startAddress = startAddress - 1;
+    const startShift = startAddress % 8;
+    const startByte = Math.floor(startAddress / 8);
+    const endByte = Math.floor(endAddress / 8);
 
-    const size = endByte - startByte + 1
+    const size = endByte - startByte + 1;
 
     // Define a new buffer
-    const buffer = Buffer.allocUnsafe(size)
+    const buffer = Buffer.allocUnsafe(size);
 
-    buffer[0] = outputs[0] << startShift
-    debug('buffer[0] = %s ( %s << %d )', buffer[0].toString(2), outputs[0].toString(2), startShift)
+    buffer[0] = outputs[0] << startShift;
+    debug(
+      'buffer[0] = %s ( %s << %d )',
+      buffer[0].toString(2),
+      outputs[0].toString(2),
+      startShift
+    );
 
-    const paddedBuffer = Buffer.concat([outputs, Buffer.alloc(1)], outputs.length + 1)
+    const paddedBuffer = Buffer.concat(
+      [outputs, Buffer.alloc(1)],
+      outputs.length + 1
+    );
 
     for (let i = 1; i < size; i++) {
-      buffer[i] = (paddedBuffer[i] << startShift) + (paddedBuffer[i - 1] >> (8 - startShift))
-      debug('buffer[%d] = %s ( %s << %d + %s >> %d)',
+      buffer[i] =
+        (paddedBuffer[i] << startShift) +
+        (paddedBuffer[i - 1] >> (8 - startShift));
+      debug(
+        'buffer[%d] = %s ( %s << %d + %s >> %d)',
         i,
         buffer[i].toString(2),
         paddedBuffer[i].toString(2),
         startShift,
         paddedBuffer[i - 1].toString(2),
         8 - startAddress
-      )
+      );
     }
 
-    return buffer
+    return buffer;
   }
 
   /** firstByte ensure first byte is set correctly
@@ -65,13 +78,17 @@ class BufferUtils {
    * @param {Byte} outputByte byte from the shifted outputs buffer
    * @returns correct first byte to be written to coils buffer
    */
-  static firstByte(startAddress: Byte, originalByte: Byte, outputByte: Byte): number {
-    startAddress = startAddress - 1
-    const startShift = startAddress % 8
-    const mask = 0xff >> (8 - startShift)
-    const maskedOriginalByte = originalByte & mask
+  static firstByte(
+    startAddress: Byte,
+    originalByte: Byte,
+    outputByte: Byte
+  ): number {
+    startAddress = startAddress - 1;
+    const startShift = startAddress % 8;
+    const mask = 0xff >> (8 - startShift);
+    const maskedOriginalByte = originalByte & mask;
 
-    return outputByte + maskedOriginalByte
+    return outputByte + maskedOriginalByte;
   }
 
   /** lastByte ensure last byte is set correctly
@@ -80,51 +97,55 @@ class BufferUtils {
    * @param {Byte} last byte from the shifted outputs buffer
    * @returns {number} correct last byte to be written to coils buffer
    */
-  static lastByte(endAddress: number, originalByte: Byte, outputByte: Byte): number {
-    const endShift = endAddress % 8
-    const mask = 0xff << endShift
-    const maskedOriginalByte = originalByte & mask
+  static lastByte(
+    endAddress: number,
+    originalByte: Byte,
+    outputByte: Byte
+  ): number {
+    const endShift = endAddress % 8;
+    const mask = 0xff << endShift;
+    const maskedOriginalByte = originalByte & mask;
 
-    return outputByte + maskedOriginalByte
+    return outputByte + maskedOriginalByte;
   }
 
   static bufferToArrayStatus(buffer: Buffer): BooleanArray {
-    const statusArray: BooleanArray = []
-    let pos: number, curByteIdx: number, curByte: Byte
+    const statusArray: BooleanArray = [];
+    let pos: number, curByteIdx: number, curByte: Byte;
     if (!(buffer instanceof Buffer)) {
-      return statusArray
+      return statusArray;
     }
 
     for (let i = 0; i < buffer.length * 8; i += 1) {
-      pos = i % 8
-      curByteIdx = Math.floor(i / 8)
-      curByte = buffer.readUInt8(curByteIdx)
-      const value = ((curByte & Math.pow(2, pos)) > 0);
+      pos = i % 8;
+      curByteIdx = Math.floor(i / 8);
+      curByte = buffer.readUInt8(curByteIdx);
+      const value = (curByte & Math.pow(2, pos)) > 0;
       statusArray.push(value ? 1 : 0);
     }
 
-    return statusArray
+    return statusArray;
   }
 
   static arrayStatusToBuffer(array: BooleanArray) {
-    const byteCount = array instanceof Array ? Math.ceil(array.length / 8) : 0
-    const buffer = Buffer.alloc(byteCount)
+    const byteCount = array instanceof Array ? Math.ceil(array.length / 8) : 0;
+    const buffer = Buffer.alloc(byteCount);
 
     if (!(array instanceof Array)) {
-      return buffer
+      return buffer;
     }
 
-    let byteOffset, bitOffset, byte
+    let byteOffset, bitOffset, byte;
     for (let i = 0; i < array.length; i += 1) {
-      byteOffset = Math.floor(i / 8)
-      bitOffset = i % 8
-      byte = buffer.readUInt8(byteOffset)
-      byte += array[i] ? Math.pow(2, bitOffset) : 0
-      buffer.writeUInt8(byte, byteOffset)
+      byteOffset = Math.floor(i / 8);
+      bitOffset = i % 8;
+      byte = buffer.readUInt8(byteOffset);
+      byte += array[i] ? Math.pow(2, bitOffset) : 0;
+      buffer.writeUInt8(byte, byteOffset);
     }
 
-    return buffer
+    return buffer;
   }
 }
 
-export = BufferUtils
+export = BufferUtils;

@@ -1,20 +1,16 @@
+import ModbusTCPRequest from './tcp-request';
+import ModbusTCPResponse from './tcp-response';
+import { UserRequestError } from './user-request-error';
+import ModbusAbstractRequest from './abstract-request';
+import ModbusAbstractResponse from './abstract-response';
+import { RequestToResponse } from './request-response-map';
+import { ModbusRequestBody } from './request';
 
+const debug = require('debug')('user-request');
 
-import ModbusTCPRequest from "./tcp-request";
-import ModbusRTURequest from "./rtu-request";
-import ModbusTCPResponse from "./tcp-response";
-import ModbusRTUResponse from "./rtu-response";
-import { UserRequestError } from "./user-request-error";
-import ModbusAbstractRequest from "./abstract-request";
-import ModbusAbstractResponse from "./abstract-response";
-import { RequestToResponse } from "./request-response-map";
-import { ModbusRequestBody } from "./request";
+type Either<A> = A;
 
-const debug = require('debug')('user-request')
-
-type Either<A, B> = A | B;
-
-export type ModbusRequest = Either<ModbusTCPRequest, ModbusRTURequest>;
+export type ModbusRequest = Either<ModbusTCPRequest>;
 // export type ModbusResponse = Either<ModbusTCPResponse, ModbusRTUResponse>;
 
 export class UserRequestMetrics {
@@ -35,7 +31,7 @@ export class UserRequestMetrics {
    */
   public get transferTime(): number {
     return this.receivedAt.getTime() - this.startedAt.getTime();
-  };
+  }
 
   /**
    * Amount of time in milliseconds the request was waiting in
@@ -49,7 +45,7 @@ export class UserRequestMetrics {
     return {
       ...this,
       transferTime: this.transferTime
-    }
+    };
   }
 }
 
@@ -59,7 +55,9 @@ export interface UserRequestResolve<Req extends ModbusAbstractRequest> {
   metrics: UserRequestMetrics;
 }
 
-export type PromiseUserRequest<Req extends ModbusAbstractRequest> = Promise<UserRequestResolve<Req>>;
+export type PromiseUserRequest<Req extends ModbusAbstractRequest> = Promise<
+  UserRequestResolve<Req>
+>;
 
 /** Request created for the user. It contains the actual modbus request,
  * the timeout handler and the promise delivered from the readCoils method
@@ -86,32 +84,34 @@ export default class UserRequest<Req extends ModbusAbstractRequest = any> {
    * @memberof UserRequest
    */
   constructor(request: Req, timeout: number = 5000) {
-    debug('creating new user request with timeout', timeout)
-    this._request = request
-    this._timeout = timeout
+    debug('creating new user request with timeout', timeout);
+    this._request = request;
+    this._timeout = timeout;
 
     this._metrics = new UserRequestMetrics();
 
     this._promise = new Promise<UserRequestResolve<Req>>((resolve, reject) => {
-      this._resolve = resolve
-      this._reject = reject
-    })
+      this._resolve = resolve;
+      this._reject = reject;
+    });
   }
 
   public createPayload() {
-    return this._request.createPayload()
+    return this._request.createPayload();
   }
 
   public start(cb: Function) {
     this._metrics.startedAt = new Date();
 
     this._timer = setTimeout(() => {
-      this._reject(new UserRequestError({
-        'err': 'Timeout',
-        'message': 'Req timed out'
-      }))
-      cb()
-    }, this._timeout)
+      this._reject(
+        new UserRequestError({
+          err: 'Timeout',
+          message: 'Req timed out'
+        })
+      );
+      cb();
+    }, this._timeout);
   }
 
   public get metrics() {
@@ -119,32 +119,36 @@ export default class UserRequest<Req extends ModbusAbstractRequest = any> {
   }
 
   public done() {
-    clearTimeout(this._timer)
+    clearTimeout(this._timer);
   }
 
   get request() {
-    return this._request
+    return this._request;
   }
 
   get timeout() {
-    return this._timeout
+    return this._timeout;
   }
 
   get promise() {
-    return this._promise
+    return this._promise;
   }
 
   public resolve(response: RequestToResponse<Req>) {
     this._metrics.receivedAt = new Date();
-    debug('request completed in %d ms (sat in cue %d ms)', this.metrics.transferTime, this.metrics.waitTime)
+    debug(
+      'request completed in %d ms (sat in cue %d ms)',
+      this.metrics.transferTime,
+      this.metrics.waitTime
+    );
     return this._resolve({
-      'response': response,
-      'request': this._request,
-      metrics: this.metrics,
-    })
+      response: response,
+      request: this._request,
+      metrics: this.metrics
+    });
   }
 
   get reject() {
-    return this._reject
+    return this._reject;
   }
 }

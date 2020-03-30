@@ -1,6 +1,6 @@
-import { isFunctionCode, ErrorCode, FunctionCode } from "../codes";
+import { isFunctionCode, ErrorCode, FunctionCode } from '../codes';
 
-import ModbusRequestBody from './request-body.js'
+import ModbusRequestBody from './request-body.js';
 
 /** Write Single Coil Request Body
  * @extends ModbusRequestBody
@@ -10,15 +10,15 @@ export default class ExceptionRequestBody extends ModbusRequestBody {
 
   static fromBuffer(buffer: Buffer) {
     try {
-      const fc = buffer.readUInt8(0)
+      const fc = buffer.readUInt8(0);
 
-      if (fc > 0x2B) {
-        return null
+      if (fc > 0x2b) {
+        return null;
       }
 
-      return new ExceptionRequestBody(fc, 0x01)
+      return new ExceptionRequestBody(fc, 0x01);
     } catch (e) {
-      return null
+      return null;
     }
   }
 
@@ -27,32 +27,32 @@ export default class ExceptionRequestBody extends ModbusRequestBody {
    * @param {ErrorCode} exception code.
    * @throws {InvalidFunctionCodeError} - when the function code is invalid
    */
-  constructor(fc: FunctionCode, code: ErrorCode)
-  constructor(fc: number, code: ErrorCode)
+  constructor(fc: FunctionCode, code: ErrorCode);
+  constructor(fc: number, code: ErrorCode);
   constructor(fc: number, code: ErrorCode) {
     if (!isFunctionCode(fc)) {
-      throw Error('InvalidFunctionCode')
+      throw Error('InvalidFunctionCode');
     }
-    super(fc)
-    this._code = code
+    super(fc);
+    this._code = code;
   }
 
   /** Address to be written */
   get code() {
-    return this._code
+    return this._code;
   }
 
   createPayload() {
-    const payload = Buffer.alloc(2)
+    const payload = Buffer.alloc(2);
 
-    payload.writeUInt8(this._fc, 0) // function code
-    payload.writeUInt8(this._code, 1) // code address
+    payload.writeUInt8(this._fc, 0); // function code
+    payload.writeUInt8(this._code, 1); // code address
 
-    return payload
+    return payload;
   }
 
   get name() {
-    return 'ExceptionRequest' as const
+    return 'ExceptionRequest' as const;
   }
 
   get count() {
@@ -63,7 +63,7 @@ export default class ExceptionRequestBody extends ModbusRequestBody {
    * @returns {Number}
    */
   get byteCount() {
-    return 2
+    return 2;
   }
 
   get isException() {

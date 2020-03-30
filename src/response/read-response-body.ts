@@ -1,6 +1,6 @@
-import { FunctionCode } from "../codes";
-import ModbusBaseResponseBody from "./response-body";
-import { BooleanArray } from "../constants";
+import { FunctionCode } from '../codes';
+import ModbusBaseResponseBody from './response-body';
+import { BooleanArray } from '../constants';
 
 /** Modbus Response Body
  * @abstract
@@ -19,7 +19,7 @@ export default abstract class ModbusReadResponseBody extends ModbusBaseResponseB
 
   /** Function Code */
   get fc() {
-    return this._fc
+    return this._fc;
   }
 
   /** Number of bytes for the payload.  */
@@ -48,7 +48,6 @@ export default abstract class ModbusReadResponseBody extends ModbusBaseResponseB
   //  */
   // public abstract readonly count: number;
 
-  public abstract get valuesAsArray(): number[] | BooleanArray | Uint16Array
-  public abstract get valuesAsBuffer(): Buffer
-
+  public abstract get valuesAsArray(): number[] | BooleanArray | Uint16Array;
+  public abstract get valuesAsBuffer(): Buffer;
 }

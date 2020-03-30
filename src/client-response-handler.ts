@@ -3,13 +3,15 @@ import ModbusAbstractResponse from './abstract-response';
 /** Modbus Client Repsonse Handler
  * @abstract
  */
-export default abstract class ModbusClientResponseHandler<ResType extends ModbusAbstractResponse = ModbusAbstractResponse> {
+export default abstract class ModbusClientResponseHandler<
+  ResType extends ModbusAbstractResponse = ModbusAbstractResponse
+> {
   protected _buffer: Buffer;
   protected abstract _messages: ResType[];
 
   /** Create new Modbus Client Response Hanlder */
   constructor() {
-    this._buffer = Buffer.alloc(0)
+    this._buffer = Buffer.alloc(0);
   }
 
   /** Process new incoming data and enqueue new modbus responses.
@@ -21,6 +23,6 @@ export default abstract class ModbusClientResponseHandler<ResType extends Modbus
    * @returns {ModbusResponse}
    */
   shift() {
-    return this._messages.shift()
+    return this._messages.shift();
   }
 }

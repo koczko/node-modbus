@@ -1,6 +1,6 @@
-import { ModbusResponseBody } from "./response";
-import ModbusAbstractRequest from "./abstract-request";
-import { ModbusRequestBody } from "./request";
+import { ModbusResponseBody } from './response';
+import ModbusAbstractRequest from './abstract-request';
+import { ModbusRequestBody } from './request';
 
 /**
  *
@@ -9,8 +9,10 @@ import { ModbusRequestBody } from "./request";
  * @abstract
  * @class ModbusAbstractResponse
  */
-export default abstract class ModbusAbstractResponse<ResBody extends ModbusResponseBody = ModbusResponseBody> {
-  protected abstract _body: ResBody
+export default abstract class ModbusAbstractResponse<
+  ResBody extends ModbusResponseBody = ModbusResponseBody
+> {
+  protected abstract _body: ResBody;
 
   /**
    * Creates Modbus TCP or RTU Response from a Modbus TCP or RTU Request including
@@ -22,8 +24,14 @@ export default abstract class ModbusAbstractResponse<ResBody extends ModbusRespo
    * @returns {ModbusAbstractResponse}
    * @memberof ModbusAbstractResponse
    */
-  public static fromRequest<ReqBody extends ModbusRequestBody, ResBody extends ModbusResponseBody>(request: ModbusAbstractRequest<ReqBody>, body: ResBody): ModbusAbstractResponse<ResBody> {
-    throw new TypeError('Cannot call fromRequest directly from abstract class')
+  public static fromRequest<
+    ReqBody extends ModbusRequestBody,
+    ResBody extends ModbusResponseBody
+  >(
+    request: ModbusAbstractRequest<ReqBody>,
+    body: ResBody
+  ): ModbusAbstractResponse<ResBody> {
+    throw new TypeError('Cannot call fromRequest directly from abstract class');
   }
 
   /**
@@ -64,11 +72,13 @@ export default abstract class ModbusAbstractResponse<ResBody extends ModbusRespo
 
   /** Modbus response body */
   public get body() {
-    return this._body
+    return this._body;
   }
 
   public abstract createPayload(): Buffer;
-
 }
 
-export type ModbusAbstractResponseFromRequest = (request: ModbusAbstractRequest, body: ModbusResponseBody) => ModbusAbstractResponse;
+export type ModbusAbstractResponseFromRequest = (
+  request: ModbusAbstractRequest,
+  body: ModbusResponseBody
+) => ModbusAbstractResponse;

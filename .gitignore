@@ -4,3 +4,4 @@ out
 old-tests
 .nyc-output
 dist
+package-lock.json

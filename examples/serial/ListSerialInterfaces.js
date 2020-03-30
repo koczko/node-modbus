@@ -1,14 +1,14 @@
-'use strict'
+'use strict';
 
-const SerialPort = require('serialport')
+const SerialPort = require('serialport');
 
-SerialPort.list(function (err, ports) {
+SerialPort.list(function(err, ports) {
   if (err) {
-    console.error(err)
-    return
+    console.error(err);
+    return;
   }
 
-  ports.forEach(function (port) {
-    console.log(port.comName)
-  })
-})
+  ports.forEach(function(port) {
+    console.log(port.comName);
+  });
+});

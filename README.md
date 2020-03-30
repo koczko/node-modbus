@@ -2,18 +2,15 @@ A simple an easy to use Modbus TCP client/server implementation.
 
 [![JavaScript Style Guide](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
-Modbus [![Build Status](https://travis-ci.org/Cloud-Automation/node-modbus.png)](https://travis-ci.org/Cloud-Automation/node-modbus)
-========
+# Modbus [![Build Status](https://travis-ci.org/Cloud-Automation/node-modbus.png)](https://travis-ci.org/Cloud-Automation/node-modbus)
 
-Modbus is a simple Modbus TCP/RTU Client/Server with a simple API. It supports modbus function codes 1 - 6 and 15 and 16.
+Modbus is a simple Modbus TCP Client/Server with a simple API. It supports modbus function codes 1 - 6 and 15 and 16.
 
-Installation
-------------
+## Installation
 
 Just type `npm install jsmodbus` and you are ready to go.
 
-Testing
--------
+## Testing
 
 The test files are implemented using [mocha](https://github.com/visionmedia/mocha) and sinon.
 
@@ -21,19 +18,18 @@ Simply `npm install -g mocha` and `npm install -g sinon`. To run the tests type 
 
 Please feel free to fork and add your own tests.
 
-New in Version 3.0.0
---------------------
+## New in Version 3.0.0
 
 We got rid of all the dependencies like stampit and serialport and make extensive use of es6 features like promisses. This way we, the developer do not have any restrictions on how to use this module. Unfortunatly this way the module probably won't work for nodejs versions lower than 6.0.
 
-For modbus rtu we recommend the serialport npm module, for tcp the net.Socket interface is needed. When you need to keep a connection alive with some reconnect logic, use the node-net-reconnect module from our github page https://github.com/cloud-automation/node-net-reconnect.
+For modbus for tcp the net.Socket interface is needed. When you need to keep a connection alive with some reconnect logic, use the node-net-reconnect module from our github page https://github.com/cloud-automation/node-net-reconnect.
 
-Debugging
----------
+## Debugging
+
 If you want to see some debugging information, since Version 3 we use the debug module. You can filter the debug output by defining the DEBUG environment variable like so `export DEBUG=*`
 
-TCP Client Example
---------------
+## TCP Client Example
+
 ```javascript
 // create a tcp modbus client
 const Modbus = require('jsmodbus')
@@ -47,61 +43,40 @@ const options = {
 
 ```
 
-RTU Client Example
----------------------
-```javascript
+## Client API Example
 
-// create a tcp modbus client
-const Modbus = require('jsmodbus')
-const SerialPort = require('serialport')
-const options = {
-baudRate: 57600
-}
-const socket = new SerialPort("/dev/tty-usbserial1", options)
-const client = new Modbus.client.RTU(socket, address)
-```
-
-Client API Example
-------------------
 ```javascript
 // for reconnecting see node-net-reconnect npm module
 
 // use socket.on('open', ...) when using serialport
-socket.on('connect', function () {
+socket.on('connect', function() {
+  // make some calls
 
-// make some calls
+  client.readCoils(0, 13).then(function(resp) {
+    // resp will look like { response : [TCP]Response, request: [TCP]Request }
+    // the data will be located in resp.response.body.coils: <Array>, resp.response.body.payload: <Buffer>
 
-client.readCoils(0, 13).then(function (resp) {
-
-// resp will look like { response : [TCP|RTU]Response, request: [TCP|RTU]Request }
-// the data will be located in resp.response.body.coils: <Array>, resp.response.body.payload: <Buffer>
-
-console.log(resp);
-
-}, console.error);
-
+    console.log(resp);
+  }, console.error);
 });
 
-socket.connect(options)
-
+socket.connect(options);
 ```
 
-Keeping TCP Connections alive
-----------------------------
+## Keeping TCP Connections alive
+
 I've written a module to keep net.Socket connections alive by emitting TCP Keep-Alive messages. Have a look at the node-net-reconnect module.
 
-Server example
---------------
+## Server example
+
 ```javascript
+const modbus = require('jsmodbus');
+const net = require('net');
+const server = new net.Server();
+const server = new modbus.server.TCP(server);
 
-const modbus = require('jsmodbus')
-const net = require('net')
-const server = new net.Server()
-const server = new modbus.server.TCP(server)
-
-server.listen(502)
-
-````
+server.listen(502);
+```
 
 ## Long Running Test Results
 

@@ -18,13 +18,16 @@ export default class ReadInputRegistersResponseBody extends ModbusReadResponseBo
    * @param {Buffer} inputRegisters
    * @returns ReadInputRegistersResponseBody
    */
-  static fromRequest(requestBody: ReadInputRegistersRequestBody, inputRegisters: Buffer) {
-    const startByte = requestBody.start * 2
-    const endByte = startByte + (requestBody.count * 2)
+  static fromRequest(
+    requestBody: ReadInputRegistersRequestBody,
+    inputRegisters: Buffer
+  ) {
+    const startByte = requestBody.start * 2;
+    const endByte = startByte + requestBody.count * 2;
 
-    const buf = inputRegisters.slice(startByte, endByte)
+    const buf = inputRegisters.slice(startByte, endByte);
 
-    return new ReadInputRegistersResponseBody(buf.length, buf)
+    return new ReadInputRegistersResponseBody(buf.length, buf);
   }
 
   /** Create ReadInputRegistersResponseBody from Buffer
@@ -32,72 +35,76 @@ export default class ReadInputRegistersResponseBody extends ModbusReadResponseBo
    * @returns ReadInputRegistersResponseBody
    */
   static fromBuffer(buffer: Buffer) {
-    const fc = buffer.readUInt8(0)
-    const byteCount = buffer.readUInt8(1)
-    const payload = buffer.slice(2, 2 + byteCount)
+    const fc = buffer.readUInt8(0);
+    const byteCount = buffer.readUInt8(1);
+    const payload = buffer.slice(2, 2 + byteCount);
 
     if (fc !== FC.READ_INPUT_REGISTERS) {
-      return null
+      return null;
     }
 
-    const values = []
+    const values = [];
     for (let i = 0; i < byteCount; i += 2) {
-      values.push(payload.readUInt16BE(i))
+      values.push(payload.readUInt16BE(i));
     }
 
-    return new ReadInputRegistersResponseBody(byteCount, values, payload)
+    return new ReadInputRegistersResponseBody(byteCount, values, payload);
   }
 
-  constructor(byteCount: number, values: number[] | Uint16Array | Buffer, payload?: Buffer) {
-    super(FC.READ_INPUT_REGISTERS)
-    this._byteCount = byteCount
-    this._values = values
-    this._bufferLength = 2
+  constructor(
+    byteCount: number,
+    values: number[] | Uint16Array | Buffer,
+    payload?: Buffer
+  ) {
+    super(FC.READ_INPUT_REGISTERS);
+    this._byteCount = byteCount;
+    this._values = values;
+    this._bufferLength = 2;
 
     if (values instanceof Array) {
-      this._valuesAsArray = values
-      this._bufferLength += values.length * 2
+      this._valuesAsArray = values;
+      this._bufferLength += values.length * 2;
     }
 
     if (values instanceof Buffer) {
-      this._valuesAsBuffer = values
-      this._bufferLength += values.length
+      this._valuesAsBuffer = values;
+      this._bufferLength += values.length;
     }
 
     if (payload !== undefined && payload instanceof Buffer) {
-      this._valuesAsBuffer = payload
+      this._valuesAsBuffer = payload;
     }
   }
 
   get byteCount() {
-    return this._bufferLength
+    return this._bufferLength;
   }
 
   get values() {
-    return this._values
+    return this._values;
   }
 
   get valuesAsArray() {
-    return this._valuesAsArray
+    return this._valuesAsArray;
   }
 
   get valuesAsBuffer() {
-    return this._valuesAsBuffer
+    return this._valuesAsBuffer;
   }
 
   get length() {
-    return this._values.length
+    return this._values.length;
   }
 
   createPayload() {
-    const payload = Buffer.alloc(this.byteCount)
+    const payload = Buffer.alloc(this.byteCount);
 
-    payload.writeUInt8(this._fc, 0)
-    payload.writeUInt8(this.length, 1)
-    this._values.forEach(function (value: number, i: number) {
-      payload.writeUInt8(value, 2 + i)
-    })
+    payload.writeUInt8(this._fc, 0);
+    payload.writeUInt8(this.length, 1);
+    this._values.forEach(function(value: number, i: number) {
+      payload.writeUInt8(value, 2 + i);
+    });
 
-    return payload
+    return payload;
   }
 }

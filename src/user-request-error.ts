@@ -1,14 +1,22 @@
-import ModbusAbstractResponse from "./abstract-response";
+import ModbusAbstractResponse from './abstract-response';
 
-export type UserRequestErrorCodes = 'OutOfSync' | 'Protocol' | 'Timeout' | 'ManuallyCleared' | 'ModbusException' | 'Offline' | 'crcMismatch'
+export type UserRequestErrorCodes =
+  | 'OutOfSync'
+  | 'Protocol'
+  | 'Timeout'
+  | 'ManuallyCleared'
+  | 'ModbusException'
+  | 'Offline'
+  | 'crcMismatch';
 
 export interface IUserRequestError<Res extends ModbusAbstractResponse> {
-  err: UserRequestErrorCodes
-  message: string
-  response?: Res
+  err: UserRequestErrorCodes;
+  message: string;
+  response?: Res;
 }
 
-export class UserRequestError<Res extends ModbusAbstractResponse> implements IUserRequestError<Res> {
+export class UserRequestError<Res extends ModbusAbstractResponse>
+  implements IUserRequestError<Res> {
   public err: UserRequestErrorCodes;
   public message: string;
   public response?: Res;
@@ -33,7 +41,7 @@ export function isUserRequestError(x: any): x is UserRequestError<any> {
   }
 
   if (x.message === undefined || typeof x.message !== 'string') {
-    return false
+    return false;
   }
 
   return true;

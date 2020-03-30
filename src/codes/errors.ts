@@ -8,8 +8,8 @@ export const ErrorMessages = {
   0x05: 'ACKNOWLEDGE',
   0x06: 'SLAVE DEVICE BUSY',
   0x08: 'MEMORY PARITY ERROR',
-  0x0A: 'GATEWAY PATH UNAVAILABLE',
-  0x0B: 'GATEWAY TARGET DEVICE FAILED TO RESPOND'
+  0x0a: 'GATEWAY PATH UNAVAILABLE',
+  0x0b: 'GATEWAY TARGET DEVICE FAILED TO RESPOND'
 } as const;
 
 type IErrorMessage = typeof ErrorMessages;
@@ -22,7 +22,7 @@ export function errorCodeToMessage(x: any) {
   if (isErrorCode(x)) {
     return ErrorMessages[x];
   } else {
-    throw new Error('')
+    throw new Error('');
   }
 }
 
@@ -35,8 +35,8 @@ export function isErrorCode(x: any): x is ErrorCode {
     case 0x05:
     case 0x06:
     case 0x08:
-    case 0x0A:
-    case 0x0B:
+    case 0x0a:
+    case 0x0b:
       return true;
     default:
       return false;

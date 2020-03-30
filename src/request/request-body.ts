@@ -1,9 +1,7 @@
-
-
-import { FunctionCode } from "../codes";
+import { FunctionCode } from '../codes';
 
 import Debug from 'debug';
-const debug = Debug('request-body')
+const debug = Debug('request-body');
 
 export type ModbusRequestTypeName =
   | 'ReadCoils'
@@ -14,7 +12,7 @@ export type ModbusRequestTypeName =
   | 'WriteMultipleRegisters'
   | 'WriteSingleCoil'
   | 'WriteSingleRegister'
-  | 'ExceptionRequest'
+  | 'ExceptionRequest';
 /** Common Modbus Request Body
  *
  *
@@ -30,26 +28,26 @@ export default abstract class ModbusRequestBody {
    */
   constructor(fc: FunctionCode) {
     if (new.target === ModbusRequestBody) {
-      throw new TypeError('Cannot construct ModbusRequestBody directly.')
+      throw new TypeError('Cannot construct ModbusRequestBody directly.');
     }
 
-    this._fc = fc
+    this._fc = fc;
   }
 
   /** Function Code */
   get fc() {
-    return this._fc
+    return this._fc;
   }
 
   /** Create byte representation.
    * @returns {Buffer}
    */
-  abstract createPayload(): Buffer
+  abstract createPayload(): Buffer;
 
   /** Returns the byte count of the `request` for the byte representation.
    * @returns {Number}
    */
-  abstract get byteCount(): number
+  abstract get byteCount(): number;
 
   /**
    * Name of the request body

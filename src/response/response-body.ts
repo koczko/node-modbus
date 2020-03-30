@@ -1,7 +1,5 @@
-
-
-import { isFunctionCode, FunctionCode } from "../codes";
-import ModbusRequestBody from "../request/request-body";
+import { isFunctionCode, FunctionCode } from '../codes';
+import ModbusRequestBody from '../request/request-body';
 
 /** Modbus Response Body
  * @abstract
@@ -16,20 +14,20 @@ export default abstract class ModbusBaseResponseBody {
   constructor(fc: FunctionCode, ignoreInvalidFunctionCode = false) {
     if (ignoreInvalidFunctionCode === false) {
       if (!isFunctionCode(fc)) {
-        throw Error('InvalidFunctionCode')
+        throw Error('InvalidFunctionCode');
       }
     }
 
-    this._fc = fc
+    this._fc = fc;
   }
 
   public static fromRequest(requestBody: ModbusRequestBody, buf: Buffer): any {
-    throw new TypeError('Cannot call from request from abstract class')
-  };
+    throw new TypeError('Cannot call from request from abstract class');
+  }
 
   /** Function Code */
   get fc() {
-    return this._fc
+    return this._fc;
   }
 
   /** Number of bytes for the payload.  */
@@ -43,5 +41,4 @@ export default abstract class ModbusBaseResponseBody {
   get isException(): boolean {
     return false;
   }
-
 }

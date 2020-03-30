@@ -1,14 +1,11 @@
-const debug = require('debug')('read-coils-response')
+const debug = require('debug')('read-coils-response');
 import BufferUtils from '../buffer-utils.js';
 import { BooleanArray } from '../constants';
 import ReadCoilsRequestBody from '../request/read-coils.js';
 import { FC } from '../codes';
 import ModbusReadResponseBody from './read-response-body.js';
 
-const {
-  bufferToArrayStatus,
-  arrayStatusToBuffer
-} = BufferUtils;
+const { bufferToArrayStatus, arrayStatusToBuffer } = BufferUtils;
 
 /** Read Coils Response Body
  * @extends ModbusResponseBody
@@ -27,15 +24,18 @@ export default class ReadCoilsResponseBody extends ModbusReadResponseBody {
    * @returns {ReadCoilsResponseBody}
    */
   static fromRequest(requestBody: ReadCoilsRequestBody, coils: Buffer) {
-    const coilsStatus = bufferToArrayStatus(coils)
+    const coilsStatus = bufferToArrayStatus(coils);
 
-    const start = requestBody.start
-    const end = start + requestBody.count
+    const start = requestBody.start;
+    const end = start + requestBody.count;
 
     // Extract the segment of coils status
-    const coilsSegment = coilsStatus.slice(start, end)
+    const coilsSegment = coilsStatus.slice(start, end);
 
-    return new ReadCoilsResponseBody(coilsSegment, Math.ceil(coilsSegment.length / 8))
+    return new ReadCoilsResponseBody(
+      coilsSegment,
+      Math.ceil(coilsSegment.length / 8)
+    );
   }
 
   /** Create ReadCoilsResponseBody from buffer.
@@ -45,21 +45,21 @@ export default class ReadCoilsResponseBody extends ModbusReadResponseBody {
   static fromBuffer(buffer: Buffer) {
     try {
       const fc = buffer.readUInt8(0);
-      const byteCount = buffer.readUInt8(1)
-      const coilStatus = buffer.slice(2, 2 + byteCount)
+      const byteCount = buffer.readUInt8(1);
+      const coilStatus = buffer.slice(2, 2 + byteCount);
 
       if (coilStatus.length !== byteCount) {
-        return null
+        return null;
       }
 
       if (fc !== FC.READ_COIL) {
-        return null
+        return null;
       }
 
-      return new ReadCoilsResponseBody(coilStatus, byteCount)
+      return new ReadCoilsResponseBody(coilStatus, byteCount);
     } catch (e) {
-      debug('no valid read coils response body in the buffer yet')
-      return null
+      debug('no valid read coils response body in the buffer yet');
+      return null;
     }
   }
 
@@ -70,51 +70,51 @@ export default class ReadCoilsResponseBody extends ModbusReadResponseBody {
    * @memberof ReadCoilsResponseBody
    */
   constructor(coils: BooleanArray | Buffer, numberOfBytes: number) {
-    super(FC.READ_COIL)
-    this._coils = coils
-    this._numberOfBytes = numberOfBytes
+    super(FC.READ_COIL);
+    this._coils = coils;
+    this._numberOfBytes = numberOfBytes;
 
     if (coils instanceof Array) {
-      this._valuesAsArray = coils
-      this._valuesAsBuffer = arrayStatusToBuffer(coils)
+      this._valuesAsArray = coils;
+      this._valuesAsBuffer = arrayStatusToBuffer(coils);
     } else if (coils instanceof Buffer) {
-      this._valuesAsBuffer = coils
-      this._valuesAsArray = bufferToArrayStatus(coils)
+      this._valuesAsBuffer = coils;
+      this._valuesAsArray = bufferToArrayStatus(coils);
     } else {
-      throw new Error('InvalidCoilsInput')
+      throw new Error('InvalidCoilsInput');
     }
   }
 
   /** Coils */
   get values() {
-    return this._coils
+    return this._coils;
   }
 
   get valuesAsArray() {
-    return this._valuesAsArray
+    return this._valuesAsArray;
   }
 
   get valuesAsBuffer() {
-    return this._valuesAsBuffer
+    return this._valuesAsBuffer;
   }
 
   /** Length */
   get numberOfBytes() {
-    return this._numberOfBytes
+    return this._numberOfBytes;
   }
 
   get byteCount() {
-    return this._numberOfBytes + 2
+    return this._numberOfBytes + 2;
   }
 
   createPayload() {
-    const payload = Buffer.alloc(this.byteCount)
+    const payload = Buffer.alloc(this.byteCount);
 
-    payload.writeUInt8(this._fc, 0)
-    payload.writeUInt8(this._numberOfBytes, 1)
+    payload.writeUInt8(this._fc, 0);
+    payload.writeUInt8(this._numberOfBytes, 1);
 
-    this._valuesAsBuffer.copy(payload, 2)
+    this._valuesAsBuffer.copy(payload, 2);
 
-    return payload
+    return payload;
   }
 }

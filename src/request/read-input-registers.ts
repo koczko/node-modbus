@@ -1,6 +1,6 @@
-import { FC } from "../codes";
+import { FC } from '../codes';
 
-import ModbusRequestBody from './request-body.js'
+import ModbusRequestBody from './request-body.js';
 
 /** Read Input Registers Request Body
  * @extends ModbusRequestBody
@@ -11,17 +11,17 @@ export default class ReadInputRegistersRequestBody extends ModbusRequestBody {
 
   static fromBuffer(buffer: Buffer) {
     try {
-      const fc = buffer.readUInt8(0)
-      const start = buffer.readUInt16BE(1)
-      const count = buffer.readUInt16BE(3)
+      const fc = buffer.readUInt8(0);
+      const start = buffer.readUInt16BE(1);
+      const count = buffer.readUInt16BE(3);
 
       if (fc !== FC.READ_INPUT_REGISTERS) {
-        return null
+        return null;
       }
 
-      return new ReadInputRegistersRequestBody(start, count)
+      return new ReadInputRegistersRequestBody(start, count);
     } catch (e) {
-      return null
+      return null;
     }
   }
 
@@ -32,47 +32,49 @@ export default class ReadInputRegistersRequestBody extends ModbusRequestBody {
    * @throws {InvalidQuantityException} When count is larger than 0x7D0.
    */
   constructor(start: number, count: number) {
-    super(FC.READ_INPUT_REGISTERS)
-    if (start > 0xFFFF) {
-      throw new Error('InvalidStartAddress')
+    super(FC.READ_INPUT_REGISTERS);
+    if (start > 0xffff) {
+      throw new Error('InvalidStartAddress');
     }
-    if (count > 0x7D0) {
-      throw new Error('InvalidQuantity')
+    if (count > 0x7d0) {
+      throw new Error('InvalidQuantity');
     }
-    this._start = start
-    this._count = count
+    this._start = start;
+    this._count = count;
   }
 
   /** Start Address. */
   get start() {
-    return this._start
+    return this._start;
   }
 
   /** Quantity of registers */
   get count() {
-    return this._count
+    return this._count;
   }
 
   get name() {
-    return 'ReadInputRegisters' as const
+    return 'ReadInputRegisters' as const;
   }
 
   createPayload() {
-    const payload = Buffer.alloc(5)
+    const payload = Buffer.alloc(5);
 
-    payload.writeUInt8(this._fc, 0) // function code
-    payload.writeUInt16BE(this._start, 1) // start address
-    payload.writeUInt16BE(this._count, 3) // quantitiy of coils
+    payload.writeUInt8(this._fc, 0); // function code
+    payload.writeUInt16BE(this._start, 1); // start address
+    payload.writeUInt16BE(this._count, 3); // quantitiy of coils
 
-    return payload
+    return payload;
   }
 
   get byteCount() {
-    return 5
+    return 5;
   }
 }
 
-export function isReadInputRegistersRequestBody(x: any): x is ReadInputRegistersRequestBody {
+export function isReadInputRegistersRequestBody(
+  x: any
+): x is ReadInputRegistersRequestBody {
   if (x instanceof ReadInputRegistersRequestBody) {
     return true;
   } else {

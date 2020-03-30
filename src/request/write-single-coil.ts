@@ -1,6 +1,5 @@
 import { FC } from '../codes/index.js';
-import ModbusRequestBody from './request-body.js'
-
+import ModbusRequestBody from './request-body.js';
 
 /** Write Single Coil Request Body
  * @extends ModbusRequestBody
@@ -11,17 +10,17 @@ export default class WriteSingleCoilRequestBody extends ModbusRequestBody {
 
   static fromBuffer(buffer: Buffer) {
     try {
-      const fc = buffer.readUInt8(0)
-      const address = buffer.readUInt16BE(1)
-      const value = buffer.readUInt16BE(3) === 0xff00
+      const fc = buffer.readUInt8(0);
+      const address = buffer.readUInt16BE(1);
+      const value = buffer.readUInt16BE(3) === 0xff00;
 
       if (fc !== FC.WRITE_SINGLE_COIL) {
-        return null
+        return null;
       }
 
-      return new WriteSingleCoilRequestBody(address, value)
+      return new WriteSingleCoilRequestBody(address, value);
     } catch (e) {
-      return null
+      return null;
     }
   }
 
@@ -31,26 +30,26 @@ export default class WriteSingleCoilRequestBody extends ModbusRequestBody {
    * @throws {InvalidStartAddressException} When address is larger than 0xFFFF.
    */
   constructor(address: number, value: boolean | 0 | 1) {
-    super(FC.WRITE_SINGLE_COIL)
-    if (address > 0xFFFF) {
-      throw new Error('InvalidStartAddress')
+    super(FC.WRITE_SINGLE_COIL);
+    if (address > 0xffff) {
+      throw new Error('InvalidStartAddress');
     }
-    this._address = address
-    this._value = value
+    this._address = address;
+    this._value = value;
   }
 
   /** Address to be written */
   get address() {
-    return this._address
+    return this._address;
   }
 
   /** Value to be written */
   get value() {
-    return this._value ? 0xFF00 : 0x0000
+    return this._value ? 0xff00 : 0x0000;
   }
 
   get byteCount() {
-    return 5
+    return 5;
   }
 
   get count() {
@@ -58,21 +57,23 @@ export default class WriteSingleCoilRequestBody extends ModbusRequestBody {
   }
 
   get name() {
-    return 'WriteSingleCoil' as const
+    return 'WriteSingleCoil' as const;
   }
 
   createPayload() {
-    const payload = Buffer.alloc(5)
+    const payload = Buffer.alloc(5);
 
-    payload.writeUInt8(this._fc, 0) // function code
-    payload.writeUInt16BE(this._address, 1) // output address
-    payload.writeUInt16BE(this._value ? 0xFF00 : 0x0000, 3) // output value
+    payload.writeUInt8(this._fc, 0); // function code
+    payload.writeUInt16BE(this._address, 1); // output address
+    payload.writeUInt16BE(this._value ? 0xff00 : 0x0000, 3); // output value
 
-    return payload
+    return payload;
   }
 }
 
-export function isWriteSingleCoilRequestBody(x: any): x is WriteSingleCoilRequestBody {
+export function isWriteSingleCoilRequestBody(
+  x: any
+): x is WriteSingleCoilRequestBody {
   if (x instanceof WriteSingleCoilRequestBody) {
     return true;
   } else {
