@@ -419,8 +419,6 @@ export default class ModbusServerResponseHandler<
       return response;
     } else {
       this._server.emit('writeMultipleRegisters', this._server.holding);
-
-      console.log(request.body.values, request.body.valuesAsBuffer);
       this._server.holding.fill(
         request.body.valuesAsBuffer,
         request.body.address * 2,

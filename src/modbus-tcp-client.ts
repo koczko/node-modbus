@@ -120,7 +120,6 @@ export default class ModbusTCPClient extends MBClient<
   }
 
   private reconnect(): void {
-    console.info('reconnect !!!!!');
     if (!this.closedOnPurpose) {
       setTimeout(() => {
         this.connect();
@@ -129,14 +128,12 @@ export default class ModbusTCPClient extends MBClient<
   }
 
   private onConnect(): void {
-    console.info('onConnect !!!!!');
     if (this.closing) {
       return;
     }
   }
 
   private onClose(hadError: unknown): void {
-    console.info('onClose !!!!!');
     if (this.closing) {
       return;
     }
@@ -152,7 +149,6 @@ export default class ModbusTCPClient extends MBClient<
   }
 
   private onError(): void {
-    console.info('onError !!!!!');
     if (this.closing) {
       return;
     }
