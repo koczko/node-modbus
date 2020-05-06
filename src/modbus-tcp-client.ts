@@ -18,7 +18,7 @@ const defaultModbusTCPConnectionOptions: Partial<ModbusTCPConnectionOptions> = {
   unitId: 1,
   timeout: 5000,
   portNumber: 502,
-  retryTime: 5000
+  retryTime: 5000,
 };
 
 /** This client must be initiated with a net.Socket object. The module does not handle reconnections
@@ -58,15 +58,14 @@ export default class ModbusTCPClient extends MBClient<
    * @memberof ModbusTCPClient
    */
   constructor(options: Partial<ModbusTCPConnectionOptions>) {
-    //console.info(options);
     const socket = options.socket ?? new Socket();
     const opts: ModbusTCPConnectionOptions = {
       ...defaultModbusTCPConnectionOptions,
-      ...options
+      ...options,
     } as ModbusTCPConnectionOptions;
     opts.unitId = opts.unitId ?? 1;
     opts.timeout = opts.timeout ?? 1;
-    //console.info(options);
+    socket.setKeepAlive(true, 5000);
     super(socket);
 
     this.closing = false;
@@ -104,10 +103,9 @@ export default class ModbusTCPClient extends MBClient<
   public connect(): ModbusTCPClient {
     this.closedOnPurpose = false;
     if (!this.socket.connecting) {
-      this.socket.setKeepAlive(true, 1000);
       this.socket.connect({
         host: this.options.host,
-        port: this.options.portNumber
+        port: this.options.portNumber,
       });
     }
     return this;
@@ -137,6 +135,7 @@ export default class ModbusTCPClient extends MBClient<
     if (this.closing) {
       return;
     }
+    this.socket.end();
 
     this.state = 'offline';
     if (!hadError) {
